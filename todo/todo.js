@@ -12,6 +12,7 @@ const addTodo = () => {
   // タスク名
   const todoContent = document.createElement('span');
   todoContent.innerText = todoInput.value;
+  todoContent.addEventListener('click', editTodo);
   todoContent.classList.add('todo-content');
   newTodo.appendChild(todoContent);
 
@@ -20,14 +21,14 @@ const addTodo = () => {
   const checkButton = document.createElement('button');
 
   checkButton.addEventListener('click', switchState);
-  checkButton.innerHTML = '□未着手';
+  checkButton.innerHTML = '<i class="far fa-square"></i>';
   checkButton.classList.add('check-button');
   newTodo.appendChild(checkButton);
 
   // 削除ボタン
   const deleteButton = document.createElement('button');
   deleteButton.addEventListener('click', deleteTodo);
-  deleteButton.innerHTML = '削除';
+  deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
   deleteButton.classList.add('delete-button');
   newTodo.appendChild(deleteButton);
 
@@ -39,13 +40,13 @@ const addTodo = () => {
 };
 
 const switchState = (e) => {
-  let checkButton = e.target;
+  const checkButton = e.target.closest('.check-button');
 
   if (!checkButton.classList.contains('complete')) {
-    checkButton.innerHTML = '完了';
+    checkButton.innerHTML = '<i class="far fa-check-square"></i>';
     checkButton.classList.add('complete');
   } else {
-    checkButton.innerHTML = '□ 未着手';
+    checkButton.innerHTML = '<i class="far fa-square"></i>';
     checkButton.classList.remove('complete');
   }
 };
@@ -53,6 +54,30 @@ const switchState = (e) => {
 const deleteTodo = (e) => {
   const todoList = e.target.closest('li');
   todoList.remove();
+};
+
+const saveTodoContent = (e) => {
+  const itemToSave = e.target;
+  const textValue = itemToSave.value;
+  if (textValue !== '') {
+    itemToSave.parentNode.textContent = textValue;
+  }
+};
+
+const editTodo = (e) => {
+  const itemToEdit = e.target;
+
+  // 編集用のテキストフィールドに置き換える
+  const input = document.createElement('input');
+  input.setAttribute('type', 'text');
+  input.classList.add('editbox');
+  input.setAttribute('value', itemToEdit.textContent);
+  itemToEdit.textContent = '';
+  itemToEdit.appendChild(input);
+
+  const editContent = itemToEdit.querySelector('.editbox');
+  // フォーカスが外れた際（編集完了後）にフィールドを除去するイベントを追加
+  editContent.addEventListener('blur', saveTodoContent);
 };
 
 addButton.addEventListener('click', addTodo);
